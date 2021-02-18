@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
@@ -80,8 +81,8 @@ class ContactData extends Component {
                 elementType: 'select',
                 elementConfig: {
                     options: [
-                        {value: 'fastest', displayValue: 'Fastest'},
-                        {value: 'cheapest', displayValue: 'Cheapest'}
+                        { value: 'fastest', displayValue: 'Fastest' },
+                        { value: 'cheapest', displayValue: 'Cheapest' }
                     ]
                 },
                 value: '',
@@ -95,42 +96,42 @@ class ContactData extends Component {
 
     orderHandler = event => {
         event.preventDefault();
-        this.setState({loading: true});
+        this.setState({ loading: true });
 
         const formData = {};
-        for(let formElementId in this.state.orderForm) {
+        for (let formElementId in this.state.orderForm) {
             formData[formElementId] = this.state.orderForm[formElementId].value;
         }
 
         const order = {
-            ingredients: this.props.ingredients,
+            ingredients: this.props.ings,
             price: this.props.price,
             orderData: formData
         }
 
         axios.post('/orders.json', order)
             .then(res => {
-                this.setState({loading: false});
+                this.setState({ loading: false });
                 console.log('[ContactData] order fired successfully!');
                 this.props.history.push('/');
             })
             .catch(err => {
-                this.setState({loading: false});
+                this.setState({ loading: false });
             });
     }
 
     checkValidity(value, rules) {
         let isValid = true;
 
-        if(rules.required) {
+        if (rules.required) {
             isValid = value.trim() !== '' && isValid;
         }
 
-        if(rules.minLength) {
+        if (rules.minLength) {
             isValid = value.length >= rules.minLength && isValid;
         }
 
-        if(rules.maxLength) {
+        if (rules.maxLength) {
             isValid = value.length <= rules.minLength && isValid;
         }
 
@@ -179,7 +180,7 @@ class ContactData extends Component {
             </form>
         );
         if (this.state.loading) {
-            form = <Spinner/>;
+            form = <Spinner />;
         }
 
         return (
@@ -191,4 +192,11 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData;
+const mapStateToProps = state => {
+    return {
+        ings: state.ingredients,
+        price: state.totalPrice
+    };
+}
+
+export default connect(mapStateToProps)(ContactData);
