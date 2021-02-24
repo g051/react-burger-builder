@@ -9,24 +9,16 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-import * as actionTypes from '../../store/actions';
+import * as actions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
     state = {
         purchasing: false,
-        loading: false,
-        error: false
     }
 
     componentDidMount() {
         console.log('[BurgerBuilder] componentDidMount', this.props);
-        // axios.get('/ingredients.json')
-        //     .then(res => {
-        //         this.setState({ ingredients: res.data });
-        //     })
-        //     .catch(err => {
-        //         this.setState({ error: true });
-        //     });
+        this.props.onInitIngredients();
     }
 
     purchaseHandler = () => {
@@ -48,7 +40,7 @@ class BurgerBuilder extends Component {
         }
 
         let orderSummary = null;
-        let burger = this.state.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
+        let burger = this.props.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
 
         if (this.props.ings) {
             burger = (
@@ -69,9 +61,6 @@ class BurgerBuilder extends Component {
                 purchaseCanceled={this.purchaseCancelHandler}
                 purchaseContinued={this.purchaseContinueHandler} />;
         }
-        if (this.state.loading) {
-            orderSummary = <Spinner />;
-        }
 
         return (
             <Aux>
@@ -84,18 +73,16 @@ class BurgerBuilder extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        ings: state.ingredients,
-        price: state.totalPrice
-    };
-}
+const mapStateToProps = state => ({
+    ings: state.ingredients,
+    price: state.totalPrice,
+    error: state.error
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        onIngredientAdded: ingredient => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredient }),
-        onIngredientRemoved: ingredient => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredient })
-    };
-}
+const mapDispatchToProps = dispatch => ({
+    onIngredientAdded: ingName => dispatch(actions.addIngredient(ingName)),
+    onIngredientRemoved: ingName => dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIntgredients())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
