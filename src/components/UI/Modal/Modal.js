@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Aux from '../../../hoc/Auxiliary/Auxiliary';
 import Backdrop from '../Backdrop/Backdrop';
 import classes from './Modal.module.css';
@@ -8,14 +8,10 @@ class Modal extends Component {
         return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log('[Modal] componentDidUpdate');
-    }
-
     render() {
         return (
             <Aux>
-                <Backdrop show={this.props.show} clicked={this.props.modalClosed}/>
+                <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
                 <div
                     className={classes.Modal}
                     style={{

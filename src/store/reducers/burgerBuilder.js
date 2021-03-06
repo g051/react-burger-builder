@@ -1,10 +1,11 @@
 import * as actionTypes from '../actions/actionTypes';
-import { updateObject } from '../utility';
+import { updateObject } from '../../shared/utility';
 
 const initialState = {
     ingredients: null,
     totalPrice: 4,
-    error: false
+    error: false,
+    building: false
 };
 
 const INGREDIENT_PRICES = {
@@ -18,7 +19,8 @@ const addIngredient = (state, ing) => {
     const ingredients = updateObject(state.ingredients, { [ing]: state.ingredients[ing] + 1 });
     return updateObject(state, {
         ingredients,
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[ing]
+        totalPrice: state.totalPrice + INGREDIENT_PRICES[ing],
+        building: true
     });
 }
 
@@ -26,7 +28,8 @@ const removeIngredient = (state, ing) => {
     const ingredients = updateObject(state.ingredients, { [ing]: state.ingredients[ing] - 1 });
     return updateObject(state, {
         ingredients,
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[ing]
+        totalPrice: state.totalPrice + INGREDIENT_PRICES[ing],
+        building: true
     });
 };
 
@@ -38,14 +41,15 @@ const setIngredient = (state, ing) => updateObject(state, {
         meat: ing.meat
     },
     totalPrice: initialState.totalPrice,
-    error: false
+    error: false,
+    building: false
 });
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.ADD_INGREDIENT: return addIngredient(state, action.ingredient);
         case actionTypes.REMOVE_INGREDIENT: return removeIngredient(state, action.ingredient);
-        case actionTypes.SET_INGREDIENTS: return setIngredient(state, action.ingredient);
+        case actionTypes.SET_INGREDIENTS: return setIngredient(state, action.ingredients);
         case actionTypes.FETCH_INGREDIENTS_FAILED: return updateObject(state, { error: true });
         default: return state;
     }
